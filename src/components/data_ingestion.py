@@ -1,0 +1,56 @@
+import os
+import sys
+from src.exception import CustomException
+from src.logger import logging
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from dataclasses import dataclass
+
+@dataclass
+class DataIngestionConfig:
+    # Use absolute paths to avoid confusion
+    root_dir: str = os.getcwd() 
+    train_data_path: str = os.path.join(root_dir, 'artifacts', "train.csv")
+    test_data_path: str = os.path.join(root_dir, 'artifacts', "test.csv")
+    raw_data_path: str = os.path.join(root_dir, 'artifacts', "data.csv")
+
+class DataIngestion:
+    def __init__(self):
+        self.ingestion_config = DataIngestionConfig()
+
+    def initiate_data_ingestion(self):
+        logging.info("Entered the data ingestion method or component")
+        try:
+            # 1. READ DATA FIRST (using absolute path)
+            data_source = os.path.join(os.getcwd(), 'notebook', 'stud.csv')
+            df = pd.read_csv(data_source)
+            logging.info(f'Read the dataset from {data_source}')
+
+            # 2. CREATE ARTIFACTS FOLDER IMMEDIATELY
+            os.makedirs(os.path.dirname(self.ingestion_config.train_data_path), exist_ok=True)
+            logging.info("Created artifacts directory")
+
+            # 3. SAVE RAW DATA
+            df.to_csv(self.ingestion_config.raw_data_path, index=False, header=True)
+
+            # 4. SPLIT AND SAVE
+            logging.info("Train test split initiated")
+            train_set, test_set = train_test_split(df, test_size=0.2, random_state=42)
+
+            train_set.to_csv(self.ingestion_config.train_data_path, index=False, header=True)
+            test_set.to_csv(self.ingestion_config.test_data_path, index=False, header=True)
+
+            logging.info("Ingestion of the data is completed")
+
+            return (
+                self.ingestion_config.train_data_path,
+                self.ingestion_config.test_data_path
+            )
+        except Exception as e:
+            # Print the error to the console so you can see why it failed
+            print(f"Error occurred: {e}") 
+            raise CustomException(e, sys)
+
+if __name__ == "__main__":
+    obj = DataIngestion()
+    obj.initiate_data_ingestion()
