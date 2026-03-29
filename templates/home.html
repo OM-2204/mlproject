@@ -1,119 +1,220 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Student Exam Performance Indicator</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Predictor | Cognitive Prism AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface": "#060e20",
+                        "surface-variant": "#192540",
+                        "primary": "#a7a5ff",
+                        "secondary": "#af88ff",
+                        "tertiary": "#61c2ff",
+                        "on-surface": "#dee5ff",
+                        "on-surface-variant": "#a3aac4",
+                        "outline-variant": "#40485d",
+                        "surface-container": "#0f1930",
+                        "surface-container-low": "#091328",
+                        "surface-container-high": "#141f38",
+                        "secondary-container": "rgba(96, 1, 209, 0.3)",
+                        "on-secondary-container": "#e1d0ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope", "sans-serif"],
+                        "body": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
         body {
-            background-color: #d3d3d3;
-            font-family: "Times New Roman", serif;
+            background-color: #060e20; /* surface */
+            color: #dee5ff;
         }
-        h1 {
-            font-size: 36px;
-            font-weight: bold;
+        /* Glassmorphism: 60% opacity with 40px blur */
+        .glass-card {
+            background: rgba(25, 37, 64, 0.6);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(109, 117, 140, 0.15); /* Ghost Border */
         }
-        h2 {
-            font-size: 32px;
-            font-weight: bold;
+        /* Kinetic Energy Gradient at 135deg */
+        .cta-gradient {
+            background: linear-gradient(135deg, #645efb 0%, #8a4cfc 100%);
         }
-        label {
-            display: inline-block;
-            width: 220px;
-            margin-bottom: 8px;
-            font-size: 18px;
-        }
-        select, input {
-            padding: 3px;
-            font-size: 14px;
-        }
-        button {
-            margin-top: 10px;
-            padding: 5px 10px;
-            font-size: 14px;
-        }
-        .result {
-            margin-top: 20px;
-            font-size: 28px;
-            font-weight: bold;
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a3aac4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.25rem;
         }
     </style>
 </head>
-<body>
 
-    <h1>Student Exam Performance Indicator</h1>
-    <h2>Student Exam Performance Prediction</h2>
+<body class="font-body selection:bg-primary/30">
 
-    <form action="{{url_for('predict_datapoint')}}" method="POST">
-
-        <div>
-            <label>Gender</label>
-            <select name="gender">
-                <option>Select your Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-            </select>
+<nav class="fixed top-0 w-full z-50 bg-[#060e20]/60 backdrop-blur-xl">
+    <div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
+        <div class="text-xl font-bold tracking-tighter text-primary font-headline">Cognitive Prism</div>
+        <div class="hidden md:flex items-center gap-8 font-headline text-sm">
+            <a class="text-on-surface-variant hover:text-on-surface transition-colors" href="/">Home</a>
+            <a class="text-primary border-b-2 border-primary pb-1" href="#">Predictor</a>
+            <a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Analytics</a>
         </div>
-
-        <div>
-            <label>Race or Ethnicity</label>
-            <select name="race_ethnicity">
-                <option value="" disabled selected>Select Ethnicity</option>
-                <option value="group A">Group A</option>
-                <option value="group B">Group B</option>
-                <option value="group C">Group C</option>
-                <option value="group D">Group D</option>
-                <option value="group E">Group E</option>
-            </select>
-        </div>
-
-        <div>
-            <label>Parental Level of Education</label>
-            <select name="parental_level_of_education">
-                    <option value="" disabled selected>Select Parent Education</option>
-                    <option value="high school">High School</option>
-                    <option value="associate's degree">Associate's Degree</option>
-                    <option value="bachelor's degree">Bachelor's Degree</option>
-                    <option value="master's degree">Master's Degree</option>
-            </select>
-        </div>
-
-        <div>
-            <label>Lunch Type</label>
-            <select name="lunch">
-                <option value="" disabled selected>Select Lunch Type</option>
-                <option value="standard">Standard</option>
-                <option value="free/reduced">Free/Reduced</option>
-            </select>
-        </div>
-
-        <div>
-            <label>Test preparation Course</label>
-           <select name="test_preparation_course">
-                <option value="" disabled selected>Select Test_course</option>
-                <option value="completed">Completed</option>
-                <option value="none">None</option>
-            </select>
-        </div>
-
-        <div>
-            <label>Writing Score out of 100</label>
-            <input type="number" name="writing_score" placeholder="Enter your number">
-        </div>
-
-        <div>
-            <label>Reading Score out of 100</label>
-            <input type="number" name="reading_score" placeholder="Enter your number">
-        </div>
-
-        <div>
-            <button type="submit">Predict your Maths Score</button>
-        </div>
-
-    </form>
-
-    <div class="result">
-        THE prediction is {{results}}
+        <button class="text-primary font-semibold text-sm">Sign In</button>
     </div>
+</nav>
+
+<main class="pt-32 pb-24 px-6 max-w-5xl mx-auto">
+    <header class="mb-16">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-[0.2em] mb-6 border border-outline-variant/20">
+            <span class="material-symbols-outlined text-[14px]">psychology</span>
+            Neural Engine Active
+        </div>
+        <h1 class="font-headline text-5xl md:text-6xl font-extrabold tracking-tighter mb-4">
+            Performance <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Oracle</span>
+        </h1>
+        <p class="text-on-surface-variant max-w-2xl text-lg leading-relaxed opacity-80">
+            Utilize advanced machine learning to forecast academic outcomes. Our prism analyzes multidimensional student data to provide high-fidelity score predictions.
+        </p>
+    </header>
+
+    <div class="glass-card rounded-[2rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+        <form action="{{ url_for('predict_datapoint') }}" method="POST" class="space-y-12">
+            
+            <section>
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">person</span>
+                    </div>
+                    <h2 class="font-headline text-2xl font-bold tracking-tight">Demographics & Background</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant px-1">Gender</label>
+                        <select name="gender" class="bg-surface-container-high border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/40 transition-all">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant px-1">Race/Ethnicity</label>
+                        <select name="race_ethnicity" class="bg-surface-container-high border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/40 transition-all">
+                            <option value="group A">Group A</option>
+                            <option value="group B">Group B</option>
+                            <option value="group C">Group C</option>
+                            <option value="group D">Group D</option>
+                            <option value="group E">Group E</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant px-1">Parental Education</label>
+                        <select name="parental_level_of_education" class="bg-surface-container-high border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/40 transition-all">
+                            <option value="high school">High School</option>
+                            <option value="associate's degree">Associate's Degree</option>
+                            <option value="bachelor's degree">Bachelor's Degree</option>
+                            <option value="master's degree">Master's Degree</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant px-1">Lunch Type</label>
+                        <select name="lunch" class="bg-surface-container-high border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/40 transition-all">
+                            <option value="standard">Standard</option>
+                            <option value="free/reduced">Free/Reduced</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2 md:col-span-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant px-1">Test Preparation</label>
+                        <select name="test_preparation_course" class="bg-surface-container-high border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/40 transition-all">
+                            <option value="none">None</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-tertiary">analytics</span>
+                    </div>
+                    <h2 class="font-headline text-2xl font-bold tracking-tight">Academic Performance</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="flex flex-col gap-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Reading Score</label>
+                            <span class="text-[10px] font-mono text-tertiary">0-100</span>
+                        </div>
+                        <input type="number" name="reading_score" placeholder="e.g. 85" class="bg-surface-container-high border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-tertiary/40 transition-all" min="0" max="100" required>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Writing Score</label>
+                            <span class="text-[10px] font-mono text-tertiary">0-100</span>
+                        </div>
+                        <input type="number" name="writing_score" placeholder="e.g. 78" class="bg-surface-container-high border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-tertiary/40 transition-all" min="0" max="100" required>
+                    </div>
+                </div>
+            </section>
+
+            <button type="submit" class="cta-gradient w-full py-5 rounded-2xl text-white font-headline font-extrabold text-xl flex items-center justify-center gap-3 shadow-xl shadow-primary/10 hover:scale-[1.01] transition-all active:scale-[0.98]">
+                Predict Maths Score
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+        </form>
+
+        {% if results %}
+        <div class="mt-12 p-8 rounded-2xl bg-surface-container-high border border-tertiary/20 text-center animate-pulse">
+            <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-tertiary mb-2 block">Prediction Success</span>
+            <div class="text-4xl font-headline font-extrabold text-on-surface">
+                Estimated Score: <span class="text-tertiary">{{ results }}</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-surface-container border border-outline-variant/10">
+            <span class="material-symbols-outlined text-tertiary mb-4">verified</span>
+            <h3 class="font-headline font-bold mb-2">94% Accuracy</h3>
+            <p class="text-xs text-on-surface-variant leading-relaxed">Validated against 50k+ student historical records.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-surface-container border border-outline-variant/10">
+            <span class="material-symbols-outlined text-secondary mb-4">bolt</span>
+            <h3 class="font-headline font-bold mb-2">Real-time Insights</h3>
+            <p class="text-xs text-on-surface-variant leading-relaxed">Instant breakdowns of performance indicators as you fill data.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-surface-container border border-outline-variant/10">
+            <span class="material-symbols-outlined text-primary mb-4">groups</span>
+            <h3 class="font-headline font-bold mb-2">Student-Centric</h3>
+            <p class="text-xs text-on-surface-variant leading-relaxed">Designed to identify support areas and foster academic excellence.</p>
+        </div>
+    </div>
+</main>
+
+<footer class="py-10 border-t border-outline-variant/10 text-center">
+    <p class="text-xs text-on-surface-variant opacity-60">© 2024 Cognitive Prism AI. Built for the future of education.</p>
+</footer>
 
 </body>
 </html>

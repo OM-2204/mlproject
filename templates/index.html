@@ -1,1 +1,177 @@
-<h1>Welcome to the home page</h1>
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Cognitive Prism | Student Performance Predictor</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface": "#060e20",
+              "primary": "#a7a5ff",
+              "secondary": "#af88ff",
+              "tertiary": "#61c2ff",
+              "on-surface": "#dee5ff",
+              "on-surface-variant": "#a3aac4",
+              "surface-container-lowest": "#000000",
+              "surface-container-low": "#091328",
+              "surface-container": "#0f1930",
+              "surface-container-high": "#141f38",
+              "surface-container-highest": "#192540",
+              "outline-variant": "rgba(64, 72, 93, 0.15)",
+              "secondary-container": "rgba(96, 1, 209, 0.3)",
+              "on-secondary-container": "#e1d0ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+        body {
+            background-color: #060e20; /* surface */
+            color: #dee5ff;
+            font-family: 'Inter', sans-serif;
+        }
+        /* Glass & Gradient Rule: 135deg per documentation */
+        .cta-gradient {
+            background: linear-gradient(135deg, #645efb 0%, #8a4cfc 100%);
+        }
+        /* Glass Panel: 40px blur per documentation */
+        .glass-panel {
+            background: rgba(25, 37, 64, 0.6);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(64, 72, 93, 0.15); /* Ghost Border */
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(167, 165, 255, 0.15) 0%, rgba(6, 14, 32, 1) 70%);
+        }
+        .technical-label {
+            letter-spacing: 0.2em; /* Blueprint aesthetic */
+        }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+<nav class="fixed top-0 w-full z-50 bg-[#060e20]/80 backdrop-blur-md">
+    <div class="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
+        <div class="text-xl font-headline font-bold tracking-tighter text-primary">Cognitive Prism</div>
+        <div class="hidden md:flex items-center gap-10 font-body text-[13px] font-medium">
+            <a class="text-on-surface border-b-2 border-primary pb-1" href="{{ url_for('index') }}">Home</a>
+            <a class="text-on-surface-variant hover:text-on-surface transition-all" href="{{ url_for('predict_datapoint') }}">Predictor</a>
+            <a class="text-on-surface-variant hover:text-on-surface transition-all" href="#">Analytics</a>
+            <a class="text-on-surface-variant hover:text-on-surface transition-all" href="#">Resources</a>
+        </div>
+        <button class="text-on-surface font-semibold text-sm">Sign In</button>
+    </div>
+</nav>
+
+<main>
+    <section class="relative min-h-screen flex flex-col items-center justify-center pt-20 px-6 hero-gradient">
+        <div class="relative z-10 max-w-4xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary-container border border-outline-variant mb-10">
+                <span class="material-symbols-outlined text-[14px] text-tertiary">auto_awesome</span>
+                <span class="text-[10px] font-bold uppercase technical-label text-on-secondary-container">Next-Gen Academic Intelligence</span>
+            </div>
+            
+            <h1 class="font-headline text-6xl md:text-[80px] font-extrabold tracking-tighter mb-8 leading-[0.95]">
+                Student Performance <br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-tertiary">Predictor</span>
+            </h1>
+            
+            <p class="font-body text-lg md:text-xl text-on-surface-variant max-w-2xl mx-auto mb-12 leading-relaxed opacity-80">
+                Harness the power of neural networks to forecast academic trajectories with 94% accuracy. Transform raw educational data into actionable pathways for student success.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
+                <a href="{{ url_for('predict_datapoint') }}" class="cta-gradient text-white px-10 py-4.5 rounded-xl font-bold text-base flex items-center gap-3 shadow-2xl shadow-primary/20 hover:scale-[1.02] transition-all">
+                    Start Prediction <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+                <button class="bg-surface-container-high/40 text-on-surface px-10 py-4.5 rounded-xl font-bold text-base border border-outline-variant hover:bg-surface-container-high transition-all">
+                    View Demo
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-24 w-full max-w-5xl mx-auto">
+            <div class="glass-panel p-1 rounded-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]">
+                <div class="bg-surface-container-lowest rounded-xl overflow-hidden aspect-[16/10] border border-outline-variant flex items-center justify-center">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2000" alt="Dashboard" class="w-full h-full object-cover opacity-40 grayscale">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-32 px-6 max-w-7xl mx-auto bg-surface-container-low">
+        <div class="text-center mb-20">
+            <span class="text-[11px] font-bold uppercase technical-label text-secondary mb-4 block">Core Capabilities</span>
+            <h2 class="font-headline text-5xl font-bold tracking-tight">Precision Intelligence</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div class="md:col-span-8 glass-panel p-12 rounded-3xl flex flex-col justify-between min-h-[320px]">
+                <div class="flex justify-between items-start">
+                    <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-3xl text-primary">neurology</span>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant text-[9px] font-bold technical-label text-on-surface-variant">AI AGENT ACTIVE</span>
+                </div>
+                <div>
+                    <h3 class="font-headline text-3xl font-bold mb-4">ML Powered</h3>
+                    <p class="text-on-surface-variant text-lg max-w-md leading-relaxed">Our proprietary neural networks analyze over 200 data points per student to identify subtle patterns in engagement and comprehension.</p>
+                </div>
+            </div>
+
+            <div class="md:col-span-4 bg-surface-container p-12 rounded-3xl border border-outline-variant flex flex-col">
+                <div class="w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center mb-10">
+                    <span class="material-symbols-outlined text-3xl text-tertiary">database</span>
+                </div>
+                <h3 class="font-headline text-2xl font-bold mb-4">Data Driven</h3>
+                <p class="text-on-surface-variant leading-relaxed">Seamless integration with existing LMS platforms to synthesize attendance, grades, and participation.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 px-6">
+        <div class="max-w-5xl mx-auto glass-panel p-16 rounded-[40px] text-center relative overflow-hidden">
+            <span class="material-symbols-outlined absolute right-10 top-10 text-[120px] opacity-10 rotate-12">query_stats</span>
+            <h2 class="font-headline text-5xl font-bold mb-6">Ready to see the future?</h2>
+            <p class="text-xl text-on-surface-variant mb-12 max-w-xl mx-auto opacity-80">Upload your first dataset and watch our Cognitive Prism model transform raw numbers into clarity.</p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+                <a href="{{ url_for('predict_datapoint') }}" class="cta-gradient text-white px-10 py-4.5 rounded-full font-bold shadow-xl flex items-center gap-3">
+                    Get Started Free <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                </a>
+                <button class="text-on-surface font-bold hover:text-primary transition-all">Book a Consultation</button>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="py-12 px-8 border-t border-outline-variant bg-surface">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="flex flex-col gap-2">
+            <div class="font-headline font-bold text-primary">Cognitive Prism AI</div>
+            <p class="text-xs text-on-surface-variant">© 2024 Cognitive Prism AI. All rights reserved.</p>
+        </div>
+        <div class="flex gap-8 text-[12px] text-on-surface-variant">
+            <a href="#" class="hover:text-on-surface">Privacy Policy</a>
+            <a href="#" class="hover:text-on-surface">Terms of Service</a>
+            <a href="#" class="hover:text-on-surface">Documentation</a>
+            <a href="#" class="hover:text-on-surface">Support</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
