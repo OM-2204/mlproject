@@ -5,173 +5,815 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Cognitive Prism | Student Performance Predictor</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
         theme: {
           extend: {
             colors: {
-              "surface": "#060e20",
-              "primary": "#a7a5ff",
-              "secondary": "#af88ff",
-              "tertiary": "#61c2ff",
-              "on-surface": "#dee5ff",
-              "on-surface-variant": "#a3aac4",
+              "surface": "#000508",
+              "on-surface": "#e0f4f8",
+              "primary": "#00ffe7",
+              "secondary": "#00bcd4",
+              "tertiary": "#ff6b00",
               "surface-container-lowest": "#000000",
-              "surface-container-low": "#091328",
-              "surface-container": "#0f1930",
-              "surface-container-high": "#141f38",
-              "surface-container-highest": "#192540",
-              "outline-variant": "rgba(64, 72, 93, 0.15)",
-              "secondary-container": "rgba(96, 1, 209, 0.3)",
-              "on-secondary-container": "#e1d0ff"
+              "surface-container-low": "#010d1a",
+              "surface-container": "#021525",
+              "surface-container-high": "#03203a",
+              "surface-container-highest": "#042a4e",
+              "on-surface-variant": "#4a7a8a",
+              "outline-variant": "#0d3040",
+              "secondary-container": "#003344",
+              "on-secondary-container": "#b0eaf5"
             },
             fontFamily: {
-              "headline": ["Manrope", "sans-serif"],
-              "body": ["Inter", "sans-serif"],
-              "label": ["Inter", "sans-serif"]
-            },
+              "headline": ["Orbitron", "monospace"],
+              "body": ["Rajdhani", "sans-serif"],
+              "label": ["Share Tech Mono", "monospace"]
+            }
           },
         },
       }
     </script>
     <style>
+        /* ── RESET & BASE ── */
+        *, *::before, *::after { box-sizing: border-box; }
         body {
-            background-color: #060e20; /* surface */
-            color: #dee5ff;
-            font-family: 'Inter', sans-serif;
+            background-color: #000508;
+            color: #e0f4f8;
+            font-family: 'Rajdhani', sans-serif;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+            cursor: none;
         }
-        /* Glass & Gradient Rule: 135deg per documentation */
-        .cta-gradient {
-            background: linear-gradient(135deg, #645efb 0%, #8a4cfc 100%);
+
+        /* ── CUSTOM CURSOR ── */
+        #cursor {
+            position: fixed; width: 10px; height: 10px;
+            border: 1.5px solid #00ffe7; border-radius: 50%;
+            pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width .2s, height .2s, background .2s;
+            mix-blend-mode: screen;
         }
-        /* Glass Panel: 40px blur per documentation */
-        .glass-panel {
-            background: rgba(25, 37, 64, 0.6);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            border: 1px solid rgba(64, 72, 93, 0.15); /* Ghost Border */
+        #cursor-ring {
+            position: fixed; width: 30px; height: 30px;
+            border: 1px solid rgba(0,255,231,.2); border-radius: 50%;
+            pointer-events: none; z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: left .1s ease, top .1s ease;
         }
-        .hero-gradient {
-            background: radial-gradient(circle at 50% 50%, rgba(167, 165, 255, 0.15) 0%, rgba(6, 14, 32, 1) 70%);
+        a:hover ~ #cursor, button:hover ~ #cursor { width: 18px; height: 18px; background: rgba(0,255,231,.2); }
+
+        /* ── SCANLINES ── */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 997; pointer-events: none;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.04) 2px, rgba(0,0,0,.04) 4px);
         }
-        .technical-label {
-            letter-spacing: 0.2em; /* Blueprint aesthetic */
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: #000508; }
+        ::-webkit-scrollbar-thumb { background: #00ffe7; border-radius: 3px; }
+
+        /* ── NAV ── */
+        .nav-hud {
+            background: rgba(0, 5, 8, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,255,231,.12);
+        }
+        .nav-logo-text {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900; font-size: 1rem;
+            letter-spacing: .15em; text-transform: uppercase;
+            color: #00ffe7;
+            position: relative;
+        }
+        .nav-logo-text::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+            height: 1px; background: linear-gradient(90deg, #00ffe7, transparent);
+        }
+        .nav-link {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+            color: #4a7a8a; text-decoration: none;
+            transition: color .2s; position: relative;
+        }
+        .nav-link::before { content: '// '; color: #ff6b00; opacity: 0; transition: opacity .2s; }
+        .nav-link:hover, .nav-link.active { color: #00ffe7; }
+        .nav-link:hover::before, .nav-link.active::before { opacity: 1; }
+        .nav-signin {
+            font-family: 'Orbitron', monospace; font-size: .62rem; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase;
+            color: #000508; background: #00ffe7; border: none;
+            padding: .55rem 1.3rem; cursor: none;
+            clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+            transition: background .2s, transform .15s;
+        }
+        .nav-signin:hover { background: #ff9500; transform: translateY(-1px); }
+
+        /* ── HERO ── */
+        .hero-section {
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+            padding: 7rem 1.5rem 5rem;
+        }
+        #hero-canvas { position: absolute; inset: 0; z-index: 0; }
+
+        /* ticker */
+        .ticker-strip {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 30px; background: rgba(0,255,231,.04);
+            border-top: 1px solid rgba(0,255,231,.15);
+            overflow: hidden; z-index: 10;
+        }
+        .ticker-inner {
+            display: flex; white-space: nowrap; height: 100%; align-items: center;
+            animation: tickerRoll 30s linear infinite;
+        }
+        .ticker-item {
+            font-family: 'Share Tech Mono', monospace; font-size: .6rem;
+            letter-spacing: .1em; color: #00ffe7; opacity: .65; padding: 0 2rem;
+        }
+        .ticker-sep { color: #ff6b00; }
+        @keyframes tickerRoll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* hero badge */
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: .5rem;
+            font-family: 'Share Tech Mono', monospace; font-size: .65rem;
+            letter-spacing: .2em; text-transform: uppercase; color: #00ffe7;
+            padding: .35rem 1rem; border: 1px solid rgba(0,255,231,.3);
+            background: rgba(0,255,231,.04);
+            clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+            animation: fadeSlide .8s ease both;
+        }
+        .badge-dot { width: 6px; height: 6px; background: #00ffe7; border-radius: 50%; animation: blink 1.4s infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
+
+        /* hero heading */
+        .hero-h1 {
+            font-family: 'Orbitron', monospace; font-weight: 900;
+            font-size: clamp(2.8rem, 7vw, 6rem);
+            line-height: .95; letter-spacing: -.01em; text-transform: uppercase;
+            animation: fadeSlide .9s .15s ease both; opacity: 0;
+        }
+        .hero-h1 .solid { color: #e0f4f8; display: block; }
+        .hero-h1 .outline {
+            display: block; color: transparent;
+            -webkit-text-stroke: 1.5px #00ffe7; letter-spacing: .05em;
+        }
+        .hero-h1 .sub-line {
+            display: block; font-size: 38%; letter-spacing: .35em;
+            color: #ff6b00; margin-top: .4rem;
+        }
+
+        .hero-sub {
+            font-family: 'Rajdhani', sans-serif; font-size: 1.05rem;
+            font-weight: 300; color: #4a7a8a; line-height: 1.7;
+            border-left: 2px solid #ff6b00; padding-left: 1rem;
+            animation: fadeSlide 1s .3s ease both; opacity: 0;
+        }
+
+        /* CTA Buttons */
+        .btn-primary-hud {
+            font-family: 'Orbitron', monospace; font-size: .68rem; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase;
+            background: #00ffe7; color: #000508; border: none;
+            padding: .9rem 2.2rem; cursor: none;
+            clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+            display: inline-flex; align-items: center; gap: .5rem;
+            position: relative; overflow: hidden;
+            transition: transform .2s, background .2s;
+            box-shadow: 0 0 24px rgba(0,255,231,.3);
+            text-decoration: none;
+        }
+        .btn-primary-hud::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+            transform: translateX(-100%); transition: transform .5s;
+        }
+        .btn-primary-hud:hover { transform: translateY(-2px); background: #ff9500; box-shadow: 0 0 36px rgba(255,149,0,.4); }
+        .btn-primary-hud:hover::before { transform: translateX(100%); }
+
+        .btn-ghost-hud {
+            font-family: 'Orbitron', monospace; font-size: .68rem; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase;
+            background: transparent; color: #00ffe7;
+            border: 1px solid rgba(0,255,231,.35);
+            padding: .9rem 2.2rem; cursor: none;
+            clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+            transition: background .2s, transform .2s;
+        }
+        .btn-ghost-hud:hover { background: rgba(0,255,231,.06); transform: translateY(-2px); }
+
+        /* HUD corner panels */
+        .hud-panel {
+            position: relative;
+            border: 1px solid rgba(0,255,231,.15);
+            background: rgba(0, 21, 37, 0.7);
+            backdrop-filter: blur(20px);
+        }
+        .hud-panel::before, .hud-panel::after {
+            content: ''; position: absolute;
+            width: 18px; height: 18px;
+            border-color: #ff6b00; border-style: solid;
+        }
+        .hud-panel::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+        .hud-panel::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+        .hud-panel:hover { border-color: rgba(0,255,231,.4); box-shadow: 0 0 30px rgba(0,255,231,.08); }
+
+        /* hero dashboard float */
+        .hero-dashboard {
+            width: 100%; max-width: 900px;
+            margin: 3rem auto 0;
+            animation: floatY 6s ease-in-out infinite, fadeSlide .9s .6s ease both;
+            opacity: 0;
+        }
+        @keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+
+        /* HUD section label */
+        .sec-tag {
+            font-family: 'Share Tech Mono', monospace; font-size: .65rem;
+            letter-spacing: .25em; text-transform: uppercase; color: #ff6b00;
+            display: flex; align-items: center; gap: .8rem; margin-bottom: 1rem;
+        }
+        .sec-tag::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255,107,0,.4), transparent); max-width: 200px; }
+
+        .sec-h2 {
+            font-family: 'Orbitron', monospace; font-size: clamp(1.6rem, 3vw, 2.6rem);
+            font-weight: 900; text-transform: uppercase; letter-spacing: .03em; line-height: 1.1;
+        }
+        .sec-h2 em { font-style: normal; color: #00ffe7; }
+
+        /* feature cards */
+        .feat-card {
+            border: 1px solid rgba(0,255,231,.1);
+            background: rgba(2,21,37,.6);
+            transition: all .4s; position: relative; overflow: hidden;
+            cursor: none;
+        }
+        .feat-card::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+            height: 2px; background: linear-gradient(90deg, transparent, #00ffe7, transparent);
+            transform: scaleX(0); transition: transform .4s;
+        }
+        .feat-card:hover { border-color: rgba(0,255,231,.4); transform: translateY(-5px); background: rgba(0,255,231,.03); }
+        .feat-card:hover::after { transform: scaleX(1); }
+
+        .feat-num {
+            font-family: 'Orbitron', monospace; font-size: 3rem; font-weight: 900;
+            color: rgba(0,255,231,.06); position: absolute; top: .5rem; right: 1rem; line-height: 1;
+        }
+        .feat-icon {
+            width: 44px; height: 44px; border: 1px solid rgba(0,255,231,.25);
+            display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem;
+        }
+        .feat-icon svg { color: #00ffe7; }
+        .feat-title {
+            font-family: 'Orbitron', monospace; font-size: .75rem; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase; margin-bottom: .6rem;
+        }
+        .feat-body { font-family: 'Rajdhani', sans-serif; font-size: .95rem; color: #4a7a8a; line-height: 1.6; font-weight: 300; }
+        .feat-accent { font-family: 'Share Tech Mono', monospace; font-size: .65rem; color: #ff9500; margin-top: .8rem; letter-spacing: .08em; }
+
+        /* big accuracy card */
+        .acc-card-left { border-right: 1px solid rgba(0,255,231,.08); }
+        .acc-num {
+            font-family: 'Orbitron', monospace; font-size: clamp(4rem,8vw,7rem);
+            font-weight: 900; color: #00ffe7; letter-spacing: -.02em;
+            text-shadow: 0 0 40px rgba(0,255,231,.4);
+            animation: glitchNum 5s infinite;
+        }
+        @keyframes glitchNum {
+            0%,93%,100%{text-shadow:0 0 40px rgba(0,255,231,.4)}
+            94%{text-shadow:-3px 0 #ff6b00,3px 0 #00ffe7;transform:skewX(-3deg)}
+            96%{text-shadow:3px 0 #ff6b00,-3px 0 #00ffe7;transform:skewX(3deg)}
+            98%{text-shadow:0 0 40px rgba(0,255,231,.4);transform:skewX(0)}
+        }
+
+        /* precision badge */
+        .precision-pulse {
+            position: relative; display: inline-block;
+        }
+        .precision-pulse::before {
+            content: ''; position: absolute; inset: -10px; border-radius: 50%;
+            background: rgba(0,255,231,.15); animation: ringPulse 2s infinite;
+        }
+        @keyframes ringPulse { 0%{box-shadow:0 0 0 0 rgba(0,255,231,.4)} 70%{box-shadow:0 0 0 20px rgba(0,255,231,0)} 100%{box-shadow:0 0 0 0 rgba(0,255,231,0)} }
+
+        /* CTA section */
+        .cta-hud {
+            border: 1px solid rgba(0,255,231,.2);
+            background: linear-gradient(135deg, rgba(0,255,231,.07), rgba(255,107,0,.04));
+            position: relative; overflow: hidden;
+        }
+        .cta-hud::before {
+            content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+            width: 500px; height: 400px;
+            background: radial-gradient(ellipse, rgba(0,255,231,.08), transparent 60%);
+            pointer-events: none;
+        }
+
+        /* Neural canvas */
+        #neural-canvas { display: block; }
+
+        /* Scroll reveal */
+        .scroll-reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1); }
+        .scroll-reveal.visible { opacity: 1; transform: translateY(0); }
+        .delay-1 { transition-delay: .1s; }
+        .delay-2 { transition-delay: .2s; }
+        .delay-3 { transition-delay: .3s; }
+        .delay-4 { transition-delay: .4s; }
+
+        @keyframes fadeSlide { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+        /* process steps */
+        .proc-step { text-align: center; position: relative; }
+        .proc-num {
+            width: 44px; height: 44px; margin: 0 auto 1rem;
+            border: 1px solid rgba(0,255,231,.4);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron', monospace; font-size: .75rem; font-weight: 700;
+            color: #00ffe7; background: #000508; position: relative; z-index: 1;
+            clip-path: polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+        }
+        .proc-title { font-family: 'Orbitron', monospace; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: .5rem; }
+        .proc-body { font-family: 'Rajdhani', sans-serif; font-size: .88rem; color: #4a7a8a; line-height: 1.55; font-weight: 300; }
+
+        /* Connector dashed line */
+        .proc-connector { position: relative; }
+        .proc-connector::before {
+            content: ''; position: absolute; top: 22px; left: calc(50% + 22px); right: calc(-50% + 22px);
+            height: 1px;
+            background: repeating-linear-gradient(90deg, rgba(0,255,231,.3) 0, rgba(0,255,231,.3) 8px, transparent 8px, transparent 16px);
+        }
+
+        /* Footer */
+        .footer-hud { border-top: 1px solid rgba(0,255,231,.08); background: #000508; }
+
+        @media(max-width:768px){
+            .hero-h1{font-size:clamp(2rem,10vw,3rem)}
+            .acc-card-left{border-right:none;border-bottom:1px solid rgba(0,255,231,.08)}
         }
     </style>
 </head>
 <body class="antialiased overflow-x-hidden">
 
-<nav class="fixed top-0 w-full z-50 bg-[#060e20]/80 backdrop-blur-md">
-    <div class="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
-        <div class="text-xl font-headline font-bold tracking-tighter text-primary">Cognitive Prism</div>
-        <div class="hidden md:flex items-center gap-10 font-body text-[13px] font-medium">
-            <a class="text-on-surface border-b-2 border-primary pb-1" href="{{ url_for('index') }}">Home</a>
-            <a class="text-on-surface-variant hover:text-on-surface transition-all" href="{{ url_for('predict_datapoint') }}">Predictor</a>
-            <a class="text-on-surface-variant hover:text-on-surface transition-all" href="#">Analytics</a>
-            <a class="text-on-surface-variant hover:text-on-surface transition-all" href="#">Resources</a>
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ── NAV ── -->
+<nav class="nav-hud fixed top-0 w-full z-50">
+    <div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
+        <div class="nav-logo-text">Cognitive Prism</div>
+        <div class="hidden md:flex items-center gap-10">
+            <a class="nav-link active" href="{{ url_for('index') }}">Home</a>
+            <a class="nav-link" href="{{ url_for('predict_datapoint') }}">Predictor</a>
+            <a class="nav-link" href="#">Analytics</a>
+            <a class="nav-link" href="#">Resources</a>
         </div>
-        <button class="text-on-surface font-semibold text-sm">Sign In</button>
+        <button class="nav-signin">Access System</button>
     </div>
 </nav>
 
-<main>
-    <section class="relative min-h-screen flex flex-col items-center justify-center pt-20 px-6 hero-gradient">
-        <div class="relative z-10 max-w-4xl mx-auto text-center">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary-container border border-outline-variant mb-10">
-                <span class="material-symbols-outlined text-[14px] text-tertiary">auto_awesome</span>
-                <span class="text-[10px] font-bold uppercase technical-label text-on-secondary-container">Next-Gen Academic Intelligence</span>
+<main class="relative">
+
+    <!-- ── HERO ── -->
+    <section class="hero-section">
+        <canvas id="hero-canvas"></canvas>
+
+        <!-- HUD ticker -->
+        <div class="ticker-strip">
+            <div class="ticker-inner">
+                <span class="ticker-item">NEURAL ENGINE ACTIVE</span><span class="ticker-sep mx-4">◆</span>
+                <span class="ticker-item">MODEL ACCURACY: 94.8%</span><span class="ticker-sep mx-4">◆</span>
+                <span class="ticker-item">TRAINING RECORDS: 50,000+</span><span class="ticker-sep mx-4">◆</span>
+                <span class="ticker-item">INFERENCE: &lt;80MS</span><span class="ticker-sep mx-4">◆</span>
+                <span class="ticker-item">COGNITIVE PRISM v4.2.1</span><span class="ticker-sep mx-4">◆</span>
+                <span class="ticker-item">ENSEMBLE: GBM + DEEP NET</span><span class="ticker-sep mx-4">◆</span>
+                <!-- duplicate for seamless -->
+                <span class="ticker-item">NEURAL ENGINE ACTIVE</span><span class="ticker-sep mx-4">◆</span>
+                <span class="ticker-item">MODEL ACCURACY: 94.8%</span><span class="ticker-sep mx-4">◆</span>
+                <span class="ticker-item">TRAINING RECORDS: 50,000+</span><span class="ticker-sep mx-4">◆</span>
+                <span class="ticker-item">INFERENCE: &lt;80MS</span><span class="ticker-sep mx-4">◆</span>
+                <span class="ticker-item">COGNITIVE PRISM v4.2.1</span><span class="ticker-sep mx-4">◆</span>
+                <span class="ticker-item">ENSEMBLE: GBM + DEEP NET</span><span class="ticker-sep mx-4">◆</span>
             </div>
-            
-            <h1 class="font-headline text-6xl md:text-[80px] font-extrabold tracking-tighter mb-8 leading-[0.95]">
-                Student Performance <br/>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-tertiary">Predictor</span>
+        </div>
+
+        <!-- Hero content -->
+        <div class="relative z-10 max-w-5xl mx-auto text-center px-4">
+            <div class="hero-badge mb-10 mx-auto" style="width:fit-content">
+                <span class="badge-dot"></span>
+                Next-Gen Academic Intelligence
+            </div>
+
+            <h1 class="hero-h1 mb-8">
+                <span class="solid">Student Performance</span>
+                <span class="outline">Predictor</span>
+                <span class="sub-line">Cognitive Prism AI</span>
             </h1>
-            
-            <p class="font-body text-lg md:text-xl text-on-surface-variant max-w-2xl mx-auto mb-12 leading-relaxed opacity-80">
-                Harness the power of neural networks to forecast academic trajectories with 94% accuracy. Transform raw educational data into actionable pathways for student success.
+
+            <p class="hero-sub max-w-2xl mx-auto mb-14 text-lg">
+                Harness the power of neural networks to forecast academic trajectories with 94.8% precision. Transform raw educational data into actionable pathways for student success.
             </p>
 
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
-                <a href="{{ url_for('predict_datapoint') }}" class="cta-gradient text-white px-10 py-4.5 rounded-xl font-bold text-base flex items-center gap-3 shadow-2xl shadow-primary/20 hover:scale-[1.02] transition-all">
-                    Start Prediction <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                </a>
-                <button class="bg-surface-container-high/40 text-on-surface px-10 py-4.5 rounded-xl font-bold text-base border border-outline-variant hover:bg-surface-container-high transition-all">
-                    View Demo
-                </button>
-            </div>
-        </div>
-
-        <div class="mt-24 w-full max-w-5xl mx-auto">
-            <div class="glass-panel p-1 rounded-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]">
-                <div class="bg-surface-container-lowest rounded-xl overflow-hidden aspect-[16/10] border border-outline-variant flex items-center justify-center">
-                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2000" alt="Dashboard" class="w-full h-full object-cover opacity-40 grayscale">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-32 px-6 max-w-7xl mx-auto bg-surface-container-low">
-        <div class="text-center mb-20">
-            <span class="text-[11px] font-bold uppercase technical-label text-secondary mb-4 block">Core Capabilities</span>
-            <h2 class="font-headline text-5xl font-bold tracking-tight">Precision Intelligence</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <div class="md:col-span-8 glass-panel p-12 rounded-3xl flex flex-col justify-between min-h-[320px]">
-                <div class="flex justify-between items-start">
-                    <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-3xl text-primary">neurology</span>
-                    </div>
-                    <span class="px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant text-[9px] font-bold technical-label text-on-surface-variant">AI AGENT ACTIVE</span>
-                </div>
-                <div>
-                    <h3 class="font-headline text-3xl font-bold mb-4">ML Powered</h3>
-                    <p class="text-on-surface-variant text-lg max-w-md leading-relaxed">Our proprietary neural networks analyze over 200 data points per student to identify subtle patterns in engagement and comprehension.</p>
-                </div>
-            </div>
-
-            <div class="md:col-span-4 bg-surface-container p-12 rounded-3xl border border-outline-variant flex flex-col">
-                <div class="w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center mb-10">
-                    <span class="material-symbols-outlined text-3xl text-tertiary">database</span>
-                </div>
-                <h3 class="font-headline text-2xl font-bold mb-4">Data Driven</h3>
-                <p class="text-on-surface-variant leading-relaxed">Seamless integration with existing LMS platforms to synthesize attendance, grades, and participation.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-24 px-6">
-        <div class="max-w-5xl mx-auto glass-panel p-16 rounded-[40px] text-center relative overflow-hidden">
-            <span class="material-symbols-outlined absolute right-10 top-10 text-[120px] opacity-10 rotate-12">query_stats</span>
-            <h2 class="font-headline text-5xl font-bold mb-6">Ready to see the future?</h2>
-            <p class="text-xl text-on-surface-variant mb-12 max-w-xl mx-auto opacity-80">Upload your first dataset and watch our Cognitive Prism model transform raw numbers into clarity.</p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <a href="{{ url_for('predict_datapoint') }}" class="cta-gradient text-white px-10 py-4.5 rounded-full font-bold shadow-xl flex items-center gap-3">
-                    Get Started Free <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                <a href="{{ url_for('predict_datapoint') }}" class="btn-primary-hud">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    Start Prediction
                 </a>
-                <button class="text-on-surface font-bold hover:text-primary transition-all">Book a Consultation</button>
+                <button class="btn-ghost-hud">View Demo</button>
+            </div>
+
+            <!-- Hero dashboard float card -->
+            <div class="hero-dashboard">
+                <div class="hud-panel rounded-none p-2">
+                    <div class="bg-surface-container-lowest overflow-hidden" style="border-radius:2px">
+                        <img
+                            alt="Dashboard Preview"
+                            class="w-full h-auto opacity-80"
+                            style="filter:hue-rotate(160deg) saturate(0.6) brightness(0.5)"
+                            src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2000"
+                        />
+                        <!-- overlay HUD grid -->
+                        <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,5,8,.9));pointer-events:none"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
+
+    <!-- ── NEURAL STATS ── -->
+    <section class="relative overflow-hidden" style="background:#000508;padding:0">
+        <canvas id="neural-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+        <div class="relative z-10 py-24 px-6 flex flex-wrap items-center justify-center gap-16 max-w-5xl mx-auto">
+            <div class="text-center scroll-reveal">
+                <div class="sec-tag justify-center">System Status</div>
+                <div class="acc-num" id="cnt-acc">0%</div>
+                <div class="feat-accent text-center">Accuracy Rate</div>
+            </div>
+            <div class="text-center scroll-reveal delay-1">
+                <div class="acc-num" id="cnt-rec" style="color:#ff9500;text-shadow:0 0 40px rgba(255,149,0,.4)">0K+</div>
+                <div class="feat-accent text-center">Student Records</div>
+            </div>
+            <div class="text-center scroll-reveal delay-2">
+                <div class="acc-num" id="cnt-pts">0+</div>
+                <div class="feat-accent text-center">Data Points</div>
+            </div>
+            <div class="text-center scroll-reveal delay-3">
+                <div class="acc-num" id="cnt-inst" style="color:#ff9500;text-shadow:0 0 40px rgba(255,149,0,.4)">0+</div>
+                <div class="feat-accent text-center">Institutions</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── CAPABILITIES ── -->
+    <section class="py-36 px-6" style="background:#010d1a">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-20 scroll-reveal">
+                <div class="sec-tag justify-center">Core Capabilities</div>
+                <h2 class="sec-h2">Precision <em>Intelligence</em></h2>
+            </div>
+
+            <!-- Feature grid -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+                <!-- Big ML card -->
+                <div class="md:col-span-8 feat-card p-12 scroll-reveal">
+                    <div class="feat-num">01</div>
+                    <div class="flex justify-between items-start mb-14">
+                        <div class="feat-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                        </div>
+                        <span style="font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:#00ffe7;padding:.3rem .8rem;border:1px solid rgba(0,255,231,.3);background:rgba(0,255,231,.05)">AI AGENT ACTIVE</span>
+                    </div>
+                    <h3 class="feat-title" style="font-size:1.4rem;letter-spacing:.04em">ML Powered</h3>
+                    <p class="feat-body" style="font-size:1rem;max-width:480px">Our proprietary neural networks analyze over 200 data points per student to identify subtle patterns in engagement and comprehension.</p>
+                    <div class="feat-accent">↑ 200+ feature dimensions per student</div>
+                </div>
+
+                <!-- Data driven -->
+                <div class="md:col-span-4 feat-card p-10 scroll-reveal delay-1">
+                    <div class="feat-num">02</div>
+                    <div class="feat-icon mb-10">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                    </div>
+                    <h3 class="feat-title">Data Driven</h3>
+                    <p class="feat-body">Seamless LMS integration synthesizes attendance, grades, and participation into unified intelligence profiles.</p>
+                    <div class="feat-accent">↑ LMS-ready pipelines</div>
+                </div>
+
+                <!-- High accuracy wide card -->
+                <div class="md:col-span-12 feat-card scroll-reveal delay-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2">
+                        <div class="acc-card-left p-12 flex flex-col justify-center">
+                            <div class="feat-icon mb-10">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            </div>
+                            <h3 class="feat-title" style="font-size:1.2rem">High Accuracy</h3>
+                            <p class="feat-body text-lg" style="max-width:420px">Validated against 50,000+ historical student records. Our ensemble model consistently outperforms traditional baselines by 40%.</p>
+                            <div class="feat-accent mt-4">↑ 94.8% peer-reviewed precision</div>
+                        </div>
+                        <div class="relative min-h-72 overflow-hidden flex items-end justify-end p-12" style="background:rgba(0,5,8,.8)">
+                            <img
+                                alt="Accuracy Visual"
+                                class="absolute inset-0 w-full h-full object-cover"
+                                style="opacity:.12;filter:hue-rotate(160deg)"
+                                src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&q=80&w=1000"
+                            />
+                            <div class="relative text-right z-10">
+                                <div class="precision-pulse">
+                                    <div class="acc-num">94.8%</div>
+                                </div>
+                                <div class="feat-accent text-right mt-2">Precision Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom 3 small cards -->
+                <div class="md:col-span-4 feat-card p-10 scroll-reveal">
+                    <div class="feat-num">04</div>
+                    <div class="feat-icon mb-8">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </div>
+                    <h3 class="feat-title">Real-time Analysis</h3>
+                    <p class="feat-body">Instant cognitive driver breakdowns as parameters are filled — no batch delays.</p>
+                    <div class="feat-accent">↑ &lt;80ms inference</div>
+                </div>
+                <div class="md:col-span-4 feat-card p-10 scroll-reveal delay-1">
+                    <div class="feat-num">05</div>
+                    <div class="feat-icon mb-8">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    </div>
+                    <h3 class="feat-title">Student-Centric</h3>
+                    <p class="feat-body">Identifies support areas for an equitable path to academic excellence for every learner.</p>
+                    <div class="feat-accent">↑ Equity-first design</div>
+                </div>
+                <div class="md:col-span-4 feat-card p-10 scroll-reveal delay-2">
+                    <div class="feat-num">06</div>
+                    <div class="feat-icon mb-8">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <h3 class="feat-title">Secure &amp; Private</h3>
+                    <p class="feat-body">FERPA-compliant end-to-end encryption. Student data is never sold or shared.</p>
+                    <div class="feat-accent">↑ FERPA compliant</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── PROCESS ── -->
+    <section class="py-36 px-6" style="background:#000508">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-20 scroll-reveal">
+                <div class="sec-tag justify-center">Workflow</div>
+                <h2 class="sec-h2">How It <em>Works</em></h2>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="proc-step proc-connector scroll-reveal">
+                    <div class="proc-num">01</div>
+                    <div class="proc-title">Input Data</div>
+                    <p class="proc-body">Enter demographic background and current academic scores into the prediction terminal.</p>
+                </div>
+                <div class="proc-step proc-connector scroll-reveal delay-1">
+                    <div class="proc-num">02</div>
+                    <div class="proc-title">Feature Extraction</div>
+                    <p class="proc-body">200+ dimensions are extracted, normalized, and vectorized through preprocessing layers.</p>
+                </div>
+                <div class="proc-step proc-connector scroll-reveal delay-2">
+                    <div class="proc-num">03</div>
+                    <div class="proc-title">Model Inference</div>
+                    <p class="proc-body">GBM and deep neural net ensemble produce a calibrated, confidence-weighted prediction.</p>
+                </div>
+                <div class="proc-step scroll-reveal delay-3">
+                    <div class="proc-num">04</div>
+                    <div class="proc-title">Actionable Output</div>
+                    <p class="proc-body">Score, grade, confidence interval, and contributing factors delivered instantly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── CTA ── -->
+    <section class="py-32 px-6" style="background:#010d1a">
+        <div class="max-w-5xl mx-auto">
+            <div class="cta-hud p-20 text-center scroll-reveal" style="border-radius:4px">
+                <div class="sec-tag justify-center mb-4">Ready to Deploy</div>
+                <h2 class="sec-h2 mb-6">Ready to See the <em>Future</em>?</h2>
+                <p class="mb-14 max-w-2xl mx-auto text-lg font-light" style="color:#4a7a8a;font-family:'Rajdhani',sans-serif">
+                    Upload your dataset and watch our Cognitive Prism engine transform raw numbers into precision intelligence and clear roadmaps.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+                    <a href="{{ url_for('predict_datapoint') }}" class="btn-primary-hud">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        Get Started Free
+                    </a>
+                    <button class="btn-ghost-hud">Book Consultation</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </main>
 
-<footer class="py-12 px-8 border-t border-outline-variant bg-surface">
+<!-- ── FOOTER ── -->
+<footer class="footer-hud py-14 px-8">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-        <div class="flex flex-col gap-2">
-            <div class="font-headline font-bold text-primary">Cognitive Prism AI</div>
-            <p class="text-xs text-on-surface-variant">© 2024 Cognitive Prism AI. All rights reserved.</p>
+        <div>
+            <div class="nav-logo-text mb-2">Cognitive Prism AI</div>
+            <p style="font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.05em;color:#4a7a8a">© 2024 Cognitive Prism AI. All rights reserved.</p>
         </div>
-        <div class="flex gap-8 text-[12px] text-on-surface-variant">
-            <a href="#" class="hover:text-on-surface">Privacy Policy</a>
-            <a href="#" class="hover:text-on-surface">Terms of Service</a>
-            <a href="#" class="hover:text-on-surface">Documentation</a>
-            <a href="#" class="hover:text-on-surface">Support</a>
+        <div class="flex gap-10">
+            <a href="#" class="nav-link">Privacy</a>
+            <a href="#" class="nav-link">Terms</a>
+            <a href="#" class="nav-link">Docs</a>
+            <a href="#" class="nav-link">Support</a>
         </div>
     </div>
 </footer>
+
+<!-- ── SCRIPTS ── -->
+<script>
+/* ════════════════════════════════
+   CUSTOM CURSOR
+════════════════════════════════ */
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top  = e.clientY + 'px';
+    setTimeout(() => {
+        ring.style.left = e.clientX + 'px';
+        ring.style.top  = e.clientY + 'px';
+    }, 80);
+});
+document.querySelectorAll('a, button, select, input').forEach(el => {
+    el.addEventListener('mouseenter', () => { cur.style.width='18px'; cur.style.height='18px'; cur.style.background='rgba(0,255,231,.2)'; });
+    el.addEventListener('mouseleave', () => { cur.style.width='10px'; cur.style.height='10px'; cur.style.background=''; });
+});
+
+/* ════════════════════════════════
+   HERO PARTICLE + HEX CANVAS
+════════════════════════════════ */
+(function(){
+    const canvas = document.getElementById('hero-canvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+
+    function resize(){
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = canvas.parentElement.offsetHeight || window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    class P {
+        constructor(){ this.reset(); }
+        reset(){
+            this.x = Math.random()*W; this.y = Math.random()*H;
+            this.vx = (Math.random()-.5)*.45; this.vy = (Math.random()-.5)*.45;
+            this.r = Math.random()*1.4+.3;
+            this.a = Math.random()*.5+.1;
+            this.c = Math.random()<.65 ? '0,255,231' : '255,107,0';
+        }
+        tick(){ this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>W||this.y<0||this.y>H) this.reset(); }
+        draw(){ ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle=`rgba(${this.c},${this.a})`; ctx.fill(); }
+    }
+    for(let i=0;i<160;i++) particles.push(new P());
+
+    function hexGrid(){
+        const s=52, rows=Math.ceil(H/s)+2, cols=Math.ceil(W/(s*1.732))+2;
+        ctx.strokeStyle='rgba(0,255,231,0.025)'; ctx.lineWidth=1;
+        for(let r=0;r<rows;r++){
+            for(let c=0;c<cols;c++){
+                const x=c*s*1.732+(r%2)*s*.866, y=r*s*1.5;
+                ctx.beginPath();
+                for(let k=0;k<6;k++){
+                    const a=Math.PI/3*k-Math.PI/6;
+                    k===0 ? ctx.moveTo(x+s*.88*Math.cos(a), y+s*.88*Math.sin(a))
+                           : ctx.lineTo(x+s*.88*Math.cos(a), y+s*.88*Math.sin(a));
+                }
+                ctx.closePath(); ctx.stroke();
+            }
+        }
+    }
+
+    function connect(){
+        for(let i=0;i<particles.length;i++){
+            for(let j=i+1;j<particles.length;j++){
+                const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+                const d=Math.sqrt(dx*dx+dy*dy);
+                if(d<110){
+                    ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y);
+                    ctx.lineTo(particles[j].x,particles[j].y);
+                    ctx.strokeStyle=`rgba(0,255,231,${.1*(1-d/110)})`; ctx.lineWidth=.5; ctx.stroke();
+                }
+            }
+        }
+    }
+
+    (function loop(){
+        ctx.clearRect(0,0,W,H);
+        hexGrid();
+        particles.forEach(p=>{ p.tick(); p.draw(); });
+        connect();
+        requestAnimationFrame(loop);
+    })();
+})();
+
+/* ════════════════════════════════
+   NEURAL NET CANVAS (stats section)
+════════════════════════════════ */
+(function(){
+    const canvas = document.getElementById('neural-canvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W, H, nodes = [];
+    const layers = [3,5,7,5,3];
+    const t0 = Date.now();
+
+    function build(){
+        W = canvas.width  = canvas.parentElement.offsetWidth;
+        H = canvas.height = canvas.parentElement.offsetHeight;
+        nodes.length = 0;
+        const lw = W*.65, lx = (W-lw)/2;
+        layers.forEach((cnt,li)=>{
+            const x = lx + li*(lw/(layers.length-1));
+            for(let ni=0;ni<cnt;ni++){
+                const y = H/2 + (ni-(cnt-1)/2)*(H*.55/Math.max(...layers));
+                nodes.push({x,y,li,phase:Math.random()*Math.PI*2});
+            }
+        });
+    }
+    build(); window.addEventListener('resize', build);
+
+    (function loop(){
+        ctx.clearRect(0,0,W,H);
+        const t = (Date.now()-t0)/1000;
+        // edges
+        for(let i=0;i<nodes.length;i++) for(let j=0;j<nodes.length;j++){
+            if(nodes[j].li===nodes[i].li+1){
+                const a = .03+.07*Math.abs(Math.sin(t*.6+nodes[i].phase+nodes[j].phase));
+                ctx.beginPath(); ctx.moveTo(nodes[i].x,nodes[i].y); ctx.lineTo(nodes[j].x,nodes[j].y);
+                ctx.strokeStyle=`rgba(0,255,231,${a})`; ctx.lineWidth=.8; ctx.stroke();
+            }
+        }
+        // nodes
+        nodes.forEach(n=>{
+            const p = .5+.5*Math.sin(t*1.6+n.phase), r = 3+3*p;
+            const g = ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,r*3);
+            g.addColorStop(0,'rgba(0,255,231,.75)'); g.addColorStop(1,'rgba(0,255,231,0)');
+            ctx.beginPath(); ctx.arc(n.x,n.y,r*2.5,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+            ctx.beginPath(); ctx.arc(n.x,n.y,r,0,Math.PI*2);
+            ctx.fillStyle=`rgba(0,255,231,${.5+.5*p})`; ctx.fill();
+        });
+        requestAnimationFrame(loop);
+    })();
+})();
+
+/* ════════════════════════════════
+   SCROLL REVEAL
+════════════════════════════════ */
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+
+/* ════════════════════════════════
+   COUNTER ANIMATION
+════════════════════════════════ */
+function animCount(id, target, suffix, dur){
+    const el = document.getElementById(id);
+    if(!el) return;
+    let v = 0, step = target/60;
+    const iv = setInterval(()=>{
+        v = Math.min(v+step, target);
+        el.textContent = Math.floor(v) + suffix;
+        if(v>=target) clearInterval(iv);
+    }, dur/60);
+}
+const statsObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if(e.isIntersecting){
+            animCount('cnt-acc', 94.8, '%', 1800);
+            animCount('cnt-rec', 50,   'K+',1500);
+            animCount('cnt-pts', 200,  '+', 1600);
+            animCount('cnt-inst',120,  '+', 1400);
+            statsObs.disconnect();
+        }
+    });
+}, {threshold: .3});
+const statsSection = document.querySelector('#neural-canvas');
+if(statsSection) statsObs.observe(statsSection.parentElement);
+</script>
 
 </body>
 </html>
