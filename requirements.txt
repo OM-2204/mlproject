@@ -1,12 +1,16 @@
 numpy
 pandas
-seaborn
 matplotlib
+seaborn
 scikit-learn
 catboost
 xgboost
 dill
 flask
+<<<<<<< HEAD
 flask-cors
 gunicorn
 #-e .
+=======
+#-e .
+>>>>>>> 3f72d88befdd4f33e9ef910dae3b553f4e168d65
