@@ -5,9 +5,10 @@ WORKDIR /app
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir --prefer-binary -r requirements.txt
+RUN pip install gunicorn
 
 COPY . .
 
-EXPOSE 5000
+EXPOSE 7860
 
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:7860", "app:app"]
