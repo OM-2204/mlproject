@@ -6,6 +6,14 @@
 
 ---
 
+## 🎯 Problem Statement
+
+Educational institutions often lack robust data-driven mechanisms to identify and analyze the factors influencing student academic performance. 
+
+The objective of this project is to develop a predictive machine learning model that estimates student performance based on demographic and socioeconomic attributes. By leveraging these insights, the system aims to support early identification of at-risk students and enable informed, data-driven interventions to improve academic outcomes.
+
+---
+
 ## Overview
 
 This project explores how demographic and socioeconomic factors such as gender, ethnicity, parental education, lunch type, and test preparation influence a student's academic performance in Math, Reading, and Writing.
@@ -64,6 +72,24 @@ Multiple regression models were trained and evaluated using the **R² Score** me
 | 9 | Decision Tree | 0.7433 |
 
 > **Best Model: Ridge Regression** with an R² Score of **0.8806**, meaning the model explains ~88% of the variance in student scores.
+
+---
+
+## Key Insights
+
+- Students who completed the test preparation course scored significantly higher.
+- Lunch type (proxy for socioeconomic status) strongly impacts performance.
+- Reading and writing scores are highly correlated.
+- Parental education level positively influences student outcomes.
+
+---
+
+## Future Improvements
+
+- Deploy using Docker & Kubernetes  
+- Add real-time student performance tracking  
+- Improve model with deep learning  
+- Integrate database for large-scale data storage  
 
 ---
 
