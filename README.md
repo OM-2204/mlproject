@@ -1,8 +1,8 @@
-# Student Performance Analysis
+# Student Performance Predictor
 
 > A machine learning project to analyze and predict student academic performance based on demographic and socioeconomic factors.
 
-![Python](https://img.shields.io/badge/Python-3.x-blue) ![ML](https://img.shields.io/badge/Machine%20Learning-Scikit--learn-orange) ![Status](https://img.shields.io/badge/Status-Active-green)
+![Python](https://img.shields.io/badge/Python-3.8-blue) ![ML](https://img.shields.io/badge/Machine%20Learning-Scikit--learn-orange) ![Status](https://img.shields.io/badge/Status-Active-green)
 
 ---
 
@@ -41,8 +41,8 @@ The dataset contains **1,000 student records** across **8 features** and serves 
 
 ## Tech Stack
 
-- **Language:** Python 3.x
-- **Libraries:** Pandas, NumPy, Matplotlib, Seaborn, Scikit-learn
+- **Language:** Python 3.8
+- **Libraries:** Pandas, NumPy, Matplotlib, Seaborn, Scikit-learn, catboost, xgboost, flask ,dill
 - **Environment:** Jupyter Notebook
 
 ---
